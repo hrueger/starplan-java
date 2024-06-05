@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="lib/processing-core-4beta2/lib/core.jar" sourcepath="lib/processing-core-4beta2/src/core-src.zip"/>
+	<classpathentry kind="lib" path="lib/processing-core-4beta2/lib/gluegen-rt.jar"/>
+	<classpathentry kind="lib" path="lib/processing-core-4beta2/lib/gluegen-rt-natives-linux-aarch64.jar"/>
+	<classpathentry kind="lib" path="lib/processing-core-4beta2/lib/gluegen-rt-natives-linux-amd64.jar"/>
+	<classpathentry kind="lib" path="lib/processing-core-4beta2/lib/gluegen-rt-natives-linux-armv6hf.jar"/>
+	<classpathentry kind="lib" path="lib/processing-core-4beta2/lib/gluegen-rt-natives-linux-i586.jar"/>
+	<classpathentry kind="lib" path="lib/processing-core-4beta2/lib/gluegen-rt-natives-macosx-universal.jar"/>
+	<classpathentry kind="lib" path="lib/processing-core-4beta2/lib/gluegen-rt-natives-windows-amd64.jar"/>
+	<classpathentry kind="lib" path="lib/processing-core-4beta2/lib/gluegen-rt-natives-windows-i586.jar"/>
+	<classpathentry kind="lib" path="lib/processing-core-4beta2/lib/jogl-all.jar"/>
+	<classpathentry kind="lib" path="lib/processing-core-4beta2/lib/jogl-all-natives-linux-aarch64.jar"/>
+	<classpathentry kind="lib" path="lib/processing-core-4beta2/lib/jogl-all-natives-linux-amd64.jar"/>
+	<classpathentry kind="lib" path="lib/processing-core-4beta2/lib/jogl-all-natives-linux-armv6hf.jar"/>
+	<classpathentry kind="lib" path="lib/processing-core-4beta2/lib/jogl-all-natives-linux-i586.jar"/>
+	<classpathentry kind="lib" path="lib/processing-core-4beta2/lib/jogl-all-natives-macosx-universal.jar"/>
+	<classpathentry kind="lib" path="lib/processing-core-4beta2/lib/jogl-all-natives-windows-amd64.jar"/>
+	<classpathentry kind="lib" path="lib/processing-core-4beta2/lib/jogl-all-natives-windows-i586.jar"/>
+	<classpathentry kind="lib" path="lib/processing-pdf-3.0.2/lib/itext.jar"/>
+	<classpathentry kind="lib" path="lib/processing-pdf-3.0.2/lib/pdf.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
