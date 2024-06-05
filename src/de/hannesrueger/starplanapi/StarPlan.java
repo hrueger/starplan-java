@@ -24,7 +24,10 @@ public class StarPlan {
         StarPlan splan = new StarPlan();
         String username = "PLACEHOLDER";
         String password = "PLACEHOLDER";
-        splan.login(username, password);
+        if (!splan.login(username, password)) {
+            System.out.println("Login failed - wrong credentials?");
+            return;
+        }
         StarPlanMyView myView = splan.getMyViewParameters();
         System.out.println(myView);
         StarPlanSemester[] semesters = splan.getSemesters();
@@ -57,7 +60,7 @@ public class StarPlan {
 
     private String sessionId;
 
-    public void login(String username, String password) {
+    public boolean login(String username, String password) {
         String url = "https://splan.hdm-stuttgart.de/splan/json?m=login";
         try {
             URL obj = new URI(url).toURL();
@@ -87,8 +90,15 @@ public class StarPlan {
                     sessionId = cookie.split("=")[1].split(";")[0];
                 }
             }
+            return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            // 401: login failed
+            if (e.getMessage().contains("401")) {
+                return false;
+            } else {
+                e.printStackTrace();
+                return false;
+            }
         }
     }
 
