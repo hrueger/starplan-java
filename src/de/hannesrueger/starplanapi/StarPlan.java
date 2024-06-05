@@ -20,7 +20,7 @@ import processing.data.JSONObject;
  */
 public class StarPlan {
     private final String baseUrl = "https://splan.hdm-stuttgart.de/splan";
-    public static void main(String[] args) throws MalformedURLException {
+    public static void main(String[] args) {
         StarPlan splan = new StarPlan();
         String username = "PLACEHOLDER";
         String password = "PLACEHOLDER";
