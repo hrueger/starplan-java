@@ -19,7 +19,7 @@ import processing.data.JSONObject;
  * @author Hannes Rüger
  */
 public class StarPlan {
-
+    private final String baseUrl = "https://splan.hdm-stuttgart.de/splan";
     public static void main(String[] args) throws MalformedURLException {
         StarPlan splan = new StarPlan();
         String username = "PLACEHOLDER";
@@ -61,7 +61,7 @@ public class StarPlan {
     private String sessionId;
 
     public boolean login(String username, String password) {
-        String url = "https://splan.hdm-stuttgart.de/splan/json?m=login";
+        String url = baseUrl + "/json?m=login";
         try {
             URL obj = new URI(url).toURL();
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -105,7 +105,7 @@ public class StarPlan {
     public StarPlanMyView getMyViewParameters() {
         // do get request, get cookies
         try {
-            URL url = new URI("https://splan.hdm-stuttgart.de/splan/json?m=getpus").toURL();
+            URL url = new URI(baseUrl + "/json?m=getpus").toURL();
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
             con.setRequestProperty("Cookie", "JSESSIONID=" + sessionId);
@@ -171,7 +171,7 @@ public class StarPlan {
     }
 
     public StarPlanSemester[] getSemesters() {
-        String url = "https://splan.hdm-stuttgart.de/splan/json?m=getpus";
+        String url = baseUrl + "/json?m=getpus";
         JSONArray semesterJSON = getArray(url);
         StarPlanSemester[] semesters = new StarPlanSemester[semesterJSON.size()];
         for (int i = 0; i < semesterJSON.size(); i++) {
@@ -184,7 +184,7 @@ public class StarPlan {
     }
 
     public StarPlanStudyProgram[] getStudyPrograms(StarPlanSemester semester) {
-        String url = "https://splan.hdm-stuttgart.de/splan/json?m=getogs&pu=" + semester.id;
+        String url = baseUrl + "/json?m=getogs&pu=" + semester.id;
         JSONArray studyProgramsJSON = getArray(url);
         StarPlanStudyProgram[] studyPrograms = new StarPlanStudyProgram[studyProgramsJSON.size()];
         for (int i = 0; i < studyProgramsJSON.size(); i++) {
@@ -196,7 +196,7 @@ public class StarPlan {
     }
 
     public StarPlanGroup[] getGroups(StarPlanSemester semester, StarPlanStudyProgram studyProgram) {
-        String url = "https://splan.hdm-stuttgart.de/splan/json?m=getPgsExt&pu=" + semester.id + "&og="
+        String url = baseUrl + "/json?m=getPgsExt&pu=" + semester.id + "&og="
                 + studyProgram.id;
         JSONArray studyProgramsWithLecturesJSON = getArray(url);
         StarPlanGroup[] studyProgramsWithLectures = new StarPlanGroup[studyProgramsWithLecturesJSON
@@ -218,7 +218,7 @@ public class StarPlan {
     }
 
     public StarPlanLesson[] getTimeTableIcal(StarPlanSemester semester, StarPlanGroup group) {
-        String url = "https://splan.hdm-stuttgart.de/splan/ical?lan=de&puid=" + semester.id + "&type=pg&pgid="
+        String url = baseUrl + "/ical?lan=de&puid=" + semester.id + "&type=pg&pgid="
                 + group.id;
         String ical = getString(url);
         IcalParser icalParser = new IcalParser();
@@ -260,7 +260,7 @@ public class StarPlan {
      */
     public void getTimeTableWeekHtml(StarPlanSemester semester, StarPlanStudyProgram studyProgram,
             StarPlanGroup group) {
-        String url = "https://splan.hdm-stuttgart.de/splan/json?m=getTT&sel=pg&pu=" + semester.id + "&og="
+        String url = baseUrl + "/json?m=getTT&sel=pg&pu=" + semester.id + "&og="
                 + studyProgram.id + "&pg=" + group.shortname
                 + "&sd=true&dfc=2024-06-04&loc=1&sa=false&cb=o";
         String html = getString(url);
