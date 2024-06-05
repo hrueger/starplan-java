@@ -3,7 +3,6 @@ package de.hannesrueger.starplanapi;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -16,12 +15,25 @@ import processing.data.JSONArray;
 import processing.data.JSONObject;
 
 /**
+ * This class is a Java API for loading information from the StarPlan website.
+ * There is also a StarPlanHelper class with some useful methods.
+ * If logged in, you can also retrieve your saved view parameters to get your
+ * timetable.
  * @author Hannes Rüger
  */
 public class StarPlan {
-    private final String baseUrl = "https://splan.hdm-stuttgart.de/splan";
+    String baseUrl;
+    private String sessionId;
+
+    StarPlan(String baseUrl) {
+        this.baseUrl = baseUrl;
+    }
+
+    /**
+     * Example usage of the StarPlan API. Add your own credentials instead of PLACEHOLDER.
+     */
     public static void main(String[] args) {
-        StarPlan splan = new StarPlan();
+        StarPlan splan = new StarPlan("https://splan.hdm-stuttgart.de/splan");
         String username = "PLACEHOLDER";
         String password = "PLACEHOLDER";
         if (!splan.login(username, password)) {
@@ -58,8 +70,12 @@ public class StarPlan {
         System.out.println(events[0]);
     }
 
-    private String sessionId;
-
+    /**
+     * Logs in to the StarPlan website
+     * @param username
+     * @param password
+     * @return true if login was successful
+     */
     public boolean login(String username, String password) {
         String url = baseUrl + "/json?m=login";
         try {
@@ -102,6 +118,10 @@ public class StarPlan {
         }
     }
 
+    /**
+     * Get the saved view parameters of the logged in user
+     * @return StarPlanMyView object with the saved view parameters
+     */
     public StarPlanMyView getMyViewParameters() {
         // do get request, get cookies
         try {
@@ -170,6 +190,10 @@ public class StarPlan {
         return null;
     }
 
+    /**
+     * Get all semesters
+     * @return StarPlanSemester array with all semesters
+     */
     public StarPlanSemester[] getSemesters() {
         String url = baseUrl + "/json?m=getpus";
         JSONArray semesterJSON = getArray(url);
@@ -183,6 +207,11 @@ public class StarPlan {
         return semesters;
     }
 
+    /**
+     * Get all study programs of a semester
+     * @param semester
+     * @return StarPlanStudyProgram array with all study programs of the semester
+     */
     public StarPlanStudyProgram[] getStudyPrograms(StarPlanSemester semester) {
         String url = baseUrl + "/json?m=getogs&pu=" + semester.id;
         JSONArray studyProgramsJSON = getArray(url);
@@ -195,6 +224,12 @@ public class StarPlan {
         return studyPrograms;
     }
 
+    /**
+     * Get all groups of a study program in a semester
+     * @param semester
+     * @param studyProgram
+     * @return StarPlanGroup array with all groups of the study program
+     */
     public StarPlanGroup[] getGroups(StarPlanSemester semester, StarPlanStudyProgram studyProgram) {
         String url = baseUrl + "/json?m=getPgsExt&pu=" + semester.id + "&og="
                 + studyProgram.id;
@@ -217,6 +252,13 @@ public class StarPlan {
         return studyProgramsWithLectures;
     }
 
+    /**
+     * Get the timetable of a group in a semester
+     * Because there is no json endpoint for that, the ical format is used
+     * @param semester
+     * @param group
+     * @return StarPlanLesson array with all events of the group
+     */
     public StarPlanLesson[] getTimeTableIcal(StarPlanSemester semester, StarPlanGroup group) {
         String url = baseUrl + "/ical?lan=de&puid=" + semester.id + "&type=pg&pgid="
                 + group.id;
@@ -254,9 +296,14 @@ public class StarPlan {
         }
     }
 
-
     /**
-     * @deprecated
+     * Legacy method to get the timetable of a group in a semester
+     * Since the API does not return json for that endpoint but only
+     * html, that was parsed and used to get the timetable.
+     * Because the pixel-based position calculation is the only method
+     * which can be used to link the events to the days, this method
+     * was always a bit unreliable.
+     * @deprecated Use getTimeTableIcal instead
      */
     public void getTimeTableWeekHtml(StarPlanSemester semester, StarPlanStudyProgram studyProgram,
             StarPlanGroup group) {
@@ -304,6 +351,10 @@ public class StarPlan {
     }
 }
 
+/**
+ * Entity class for the semesters of the StarPlan website
+ * @author Hannes Rüger
+ */
 class StarPlanSemester {
     int id;
     boolean dateasdefault;
@@ -313,7 +364,8 @@ class StarPlanSemester {
     String shortname;
     boolean visibleonweb;
 
-    public StarPlanSemester(boolean dateasdefault, String enddate, String name, int id, String startdate, String shortname,
+    public StarPlanSemester(boolean dateasdefault, String enddate, String name, int id, String startdate,
+            String shortname,
             boolean visibleonweb) {
         this.dateasdefault = dateasdefault;
         this.enddate = enddate;
@@ -330,6 +382,10 @@ class StarPlanSemester {
     }
 }
 
+/**
+ * Entity class for the study programs of a semester
+ * @author Hannes Rüger
+ */
 class StarPlanStudyProgram {
     int id;
     String name;
@@ -340,8 +396,16 @@ class StarPlanStudyProgram {
         this.name = name;
         this.shortname = shortname;
     }
+
+    public String toString() {
+        return "id: " + id + " name: " + name + " shortname: " + shortname;
+    }
 }
 
+/**
+ * Entity class for the groups of a study program
+ * @author Hannes Rüger
+ */
 class StarPlanGroup {
     int id;
     String name;
@@ -354,8 +418,16 @@ class StarPlanGroup {
         this.shortname = shortname;
         this.lectures = lectures;
     }
+
+    public String toString() {
+        return "id: " + id + " name: " + name + " shortname: " + shortname;
+    }
 }
 
+/**
+ * Entity class for the lectures of a group
+ * @author Hannes Rüger
+ */
 class StarPlanLecture {
     int id;
     String name;
@@ -366,8 +438,15 @@ class StarPlanLecture {
         this.name = name;
         this.shortname = shortname;
     }
+
+    public String toString() {
+        return "id: " + id + " name: " + name + " shortname: " + shortname;
+    }
 }
 
+/**
+ * Entity class for the ical events of the timetable
+ */
 class StarPlanLesson {
     Date start;
     Date end;
@@ -377,16 +456,15 @@ class StarPlanLesson {
     String description;
 
     public String toString() {
-        System.out.println("start: " + start);
-        System.out.println("end: " + end);
-        System.out.println("summary: " + summary);
-        System.out.println("id: " + id);
-        System.out.println("location: " + location);
-        System.out.println("description: " + description);
-        return "";
+        return "start: " + start + " end: " + end + " summary: " + summary + " id: " + id + " location: " + location
+                + " description: " + description;
     }
 }
 
+/**
+ * Helper class to parse ical strings
+ * @author Hannes Rüger
+ */
 class IcalParser {
     public StarPlanLesson[] parse(String ical) {
         String[] lines = ical.split("\n");
@@ -430,6 +508,7 @@ class IcalParser {
         return events.toArray(new StarPlanLesson[0]);
     }
 
+    @SuppressWarnings("deprecation")
     private Date parseDate(String dateString) {
         Date date = new Date();
         date.setYear(Integer.parseInt(dateString.substring(0, 4)));
@@ -442,6 +521,10 @@ class IcalParser {
     }
 }
 
+/**
+ * Entity class for the saved view parameters of the logged in user
+ * @author Hannes Rüger
+ */
 class StarPlanMyView {
     String lan;
     boolean acc;
@@ -456,12 +539,22 @@ class StarPlanMyView {
     String cb;
 
     public String toString() {
-        return "lan: " + lan + " acc: " + acc + " act: " + act + " sel: " + sel + " semesterId: " + semesterId + " studyProgramId: " + studyProgramId
+        return "lan: " + lan + " acc: " + acc + " act: " + act + " sel: " + sel + " semesterId: " + semesterId
+                + " studyProgramId: " + studyProgramId
                 + " groupShortName: " + groupShortName + " sd: " + sd + " loc: " + loc + " sa: " + sa + " cb: " + cb;
     }
 }
 
+/**
+ * Helper class with some useful methods for the StarPlan API
+ * @author Hannes Rüger
+ */
 class StarPlanHelpers {
+    /**
+     * Sorts the events by start date
+     * @param events
+     * @return sorted StarPlanLesson array
+     */
     static StarPlanLesson[] sortEvents(StarPlanLesson[] events) {
         for (int i = 0; i < events.length; i++) {
             for (int j = i + 1; j < events.length; j++) {
@@ -475,11 +568,21 @@ class StarPlanHelpers {
         return events;
     }
 
+    /**
+     * Get the first event of an array of events
+     * @param events
+     * @return first StarPlanLesson
+     */
     static StarPlanLesson getFirstEvent(StarPlanLesson[] events) {
         StarPlanLesson[] sortedEvents = sortEvents(events);
         return sortedEvents[0];
     }
 
+    /**
+     * Get the last event of an array of events
+     * @param events
+     * @return last StarPlanLesson
+     */
     static StarPlanLesson getLastEvent(StarPlanLesson[] events) {
         StarPlanLesson[] sortedEvents = sortEvents(events);
         return sortedEvents[sortedEvents.length - 1];
